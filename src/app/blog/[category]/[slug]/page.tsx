@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 
 import FloatingButton from '@/components/common/FloatingButton';
-import Giscus from '@/components/post_detail/Giscus';
 import { PostBody } from '@/components/post_detail/PostBody';
 import { PostHeader } from '@/components/post_detail/PostHeader';
 import TocSidebar from '@/components/post_detail/TableOfContentSidebar';
@@ -62,7 +61,6 @@ const PostDetail = async ({ params: { category, slug } }: Props) => {
         <PostBody post={post} />
       </article>
       <hr />
-      <Giscus />
       <FloatingButton />
     </div>
   );

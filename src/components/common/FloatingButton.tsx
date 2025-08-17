@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 import CopyLinkButton from './CopyLinkButton';
-import { ScrollToComment, ScrollTop } from './TocButtons';
+import { ScrollTop } from './TocButtons'; // ScrollToComment import 제거
 import { Button } from '@/components/ui/button';
 
 import { cn } from '@/lib/utils';
@@ -43,12 +43,9 @@ const FloatingButton = () => {
           size={22}
           className={cn('absolute bottom-0 right-0 transition', visible && '-translate-y-12')}
         />
-        <ScrollToComment
-          size={22}
-          className={cn('absolute bottom-0 right-0 transition', visible && '-translate-y-24')}
-        />
+        {/* ScrollToComment 제거 */}
         <ScrollTop
-          className={cn('absolute bottom-0 right-0 transition', visible && '-translate-y-36')}
+          className={cn('absolute bottom-0 right-0 transition', visible && '-translate-y-24')}
           size={22}
         />
       </div>

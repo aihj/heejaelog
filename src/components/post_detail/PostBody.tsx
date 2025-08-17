@@ -31,9 +31,7 @@ export const PostBody = ({ post }: Props) => {
             [
               // @ts-ignore
               rehypePrettyCode,
-              {
-                theme: { dark: 'github-dark-dimmed', light: 'github-light' },
-              },
+              
             ],
             // toc id를 추가하고 제목을 연결
             rehypeSlug,
