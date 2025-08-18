@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { baseDomain, blogDesc, blogName, blogThumbnailURL } from '@/config/const';
 import '@/config/globals.css';
 import { Footer } from '@/layouts/Footer';
+import { Header } from '@/layouts/Header';
 
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
 import { Analytics } from '@vercel/analytics/react';
@@ -38,11 +39,11 @@ export default function RootLayout({
     <html lang='en' className='h-full scroll-my-20 scroll-smooth' suppressHydrationWarning>
       <body className='flex min-h-screen flex-col font-pretendard'>
         <PostHogProvider>
-          <ThemeProvider>
+       
             <Header />
             <main className='mt-[40px] flex flex-1 flex-col sm:mt-[64px]'>{children}</main>
             <Footer />
-          </ThemeProvider>
+         
           <Toaster />
           <Analytics />
           <SpeedInsights />

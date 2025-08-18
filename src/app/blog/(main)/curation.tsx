@@ -12,7 +12,7 @@ export const Curation = ({postList}: {postList: Post[]}) => {
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 w-full'>
         
         <section className='lg:col-span-1 flex flex-col'>
-          <h2 className='text-lg sm:text-2xl font-bold mb-3'>인기 포스트</h2>
+          <h2 className='text-lg sm:text-2xl font-bold mb-3'>추천하는 글</h2>
           <div className='flex flex-col gap-3 flex-1'>
             {hotPostShowList.map((post) => (
               <MiniPostCard key={post.slug} post={post} />
@@ -22,7 +22,7 @@ export const Curation = ({postList}: {postList: Post[]}) => {
         
         {/* 우측: 새 포스트 */}
         <section className="lg:col-span-1 flex flex-col">
-          <h2 className='text-lg sm:text-2xl font-bold mb-3'>새 포스트</h2>
+          <h2 className='text-lg sm:text-2xl font-bold mb-3'>새로 올라온 글</h2>
           <div>
             <PostCard post={firstPost} />
           </div>
