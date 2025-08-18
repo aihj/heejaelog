@@ -7,7 +7,7 @@ export const RESUME_DATA_KO = {
   locationLink: 'https://www.google.com/maps/place/seoul',
   about: '도전을 좋아하는 프론트엔드 개발자',
   summary:
-    '',
+    '유저 입장에서 생각하고 소통하며, 공감력 있는 서비스를 만들고 싶은 개발자',
   
   contact: {
     email: 'heejae9102@gmail.com',
@@ -26,7 +26,7 @@ export const RESUME_DATA_KO = {
       company: '크라우드웍스',
       link: 'https://www.crowdworks.ai/',
       title: 'Front-end Developer',
-      start: '2025. 02.',
+      start: '재직중',
       end: null,
       description: '네이버, LG, KT 등 국내 주요 ICT기업을 포함해 다양한 산업의 500개 이상 기업에게 솔루션을 제공하는 대한민국 대표 AI 테크 상장 기업',
       points: ['RAG 시스템 구축을 위한 B2B 솔루션 FE 개발 _ 신한은행 납품',
@@ -41,7 +41,7 @@ export const RESUME_DATA_KO = {
     {
       company: '케어네이션',
       link: 'https://www.carenation.co.kr/',
-      title: 'Web Front-end Developer',
+      title: 'Front-end Developer',
       start: '2023',
       end: '2025. 01.',
       description: '국내 1위 간병인 구인구직 플랫폼(가입자 43만명) 개발 및 유지보수',
@@ -68,5 +68,5 @@ export const RESUME_DATA_KO = {
       ],
     },
   ],
-  skills: ['Javascript', 'Typescript', 'React.js', 'Next.js'],
+  skills: ['Javascript', 'Typescript', 'React.js', 'Next.js', 'Nest.js', 'React Native'],
 } as const;

@@ -1,0 +1,166 @@
+---
+title:  "react-native로 fcm 구현 및 next.js와 연동하기"
+date: 2024-09-04
+desc: 첫번째 설명
+thumbnail: /rn.png
+isHot: true
+---
+
+![](/rn.png)
+
+
+---
+
+## 개요
+
+✅ React Native에서 FCM 토큰을 Next.js로 보냄
+✅ Next.js에서 React Native로 푸시 알림을 전송
+
+ 
+
+🔹 React Native에서 FCM 구현
+
+Firebase 설정
+Firebase 콘솔에서 프로젝트 생성
+iOS: GoogleService-Info.plist 추가
+Android: google-services.json 추가
+필요한 패키지 설치
+ 
+npm install @react-native-firebase/app @react-native-firebase/messaging
+FCM 설정 (예제 코드)
+ 
+
+```tsx
+🔹 React Native에서 FCM 구현
+Firebase 설정
+
+Firebase 콘솔에서 프로젝트 생성
+iOS: GoogleService-Info.plist 추가
+Android: google-services.json 추가
+필요한 패키지 설치
+
+sh
+npm install @react-native-firebase/app @react-native-firebase/messaging
+FCM 설정 (예제 코드)
+
+tsx
+
+import messaging from '@react-native-firebase/messaging';
+import { useEffect } from 'react';
+import { Alert } from 'react-native';
+
+const useFCM = () => {
+  useEffect(() => {
+    // 권한 요청 (iOS)
+    messaging().requestPermission();
+
+    // 토큰 가져오기
+    messaging()
+      .getToken()
+      .then(token => console.log('FCM Token:', token));
+
+    // 포그라운드 메시지 수신
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      Alert.alert('New Notification', JSON.stringify(remoteMessage));
+    });
+
+    return unsubscribe;
+  }, []);
+};
+
+export default useFCM;
+```
+✅ WebView 방식에서 FCM 적용 예제
+
+## 1️⃣ React Native에서 FCM 토큰 Next.js로 전송
+
+```tsx
+import messaging from '@react-native-firebase/messaging';
+
+const sendTokenToServer = async (token: string) => {
+  await fetch('https://your-nextjs-app.com/api/registerToken', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token }),
+  });
+};
+
+const requestFCMToken = async () => {
+  const token = await messaging().getToken();
+  if (token) {
+    await sendTokenToServer(token);
+  }
+};
+```
+설명
+
+-React Native에서 FCM 토큰을 가져와 Next.js로 보냄
+
+-Next.js 서버에서 이 토큰을 저장 (DB 또는 캐시) 
+
+## 2️⃣ Next.js API에서 토큰 저장
+
+(📌 /pages/api/registerToken.ts)
+
+```tsx
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+// DB 대신 임시 저장 (실제 앱에서는 DB 사용)
+const tokens: string[] = [];
+
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === 'POST') {
+    const { token } = req.body;
+    if (token && !tokens.includes(token)) {
+      tokens.push(token); // 저장
+      console.log('FCM Token Registered:', token);
+    }
+    return res.status(200).json({ success: true });
+  }
+  res.status(405).json({ error: 'Method not allowed' });
+}
+```
+
+## 3️⃣ Next.js에서 React Native로 푸시 알림 보내기
+
+(📌 /pages/api/sendNotification.ts)
+
+```tsx
+import type { NextApiRequest, NextApiResponse } from 'next';
+import admin from 'firebase-admin';
+
+// Firebase Admin 초기화 (서버에서 FCM 사용)
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    }),
+  });
+}
+
+// 저장된 FCM 토큰 (실제 앱에서는 DB에서 가져옴)
+const tokens: string[] = []; 
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === 'POST') {
+    const { title, body } = req.body;
+
+    try {
+      const response = await admin.messaging().sendMulticast({
+        tokens,
+        notification: { title, body },
+      });
+
+      console.log('Push notification sent:', response);
+      return res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('Error sending notification:', error);
+      return res.status(500).json({ error: error.message });
+    }
+  }
+  res.status(405).json({ error: 'Method not allowed' });
+}
+
+```

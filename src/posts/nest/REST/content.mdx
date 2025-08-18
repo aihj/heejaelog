@@ -1,0 +1,100 @@
+---
+title:  "REST API: Controller-Service"
+date: 2024-10-15
+desc: 테스트 설명 
+thumbnail: '/nest.png'
+isHot: true
+---
+
+![테스트 포스트](/nest.png)
+
+Controller
+
+     - url 매핑, 요청, query 넘기
+
+ 
+```tsx
+import {controller, Get} from '@nestJs/common';
+import {MoviesService} from './movies.service';
+import {CreateMovieDto} from './dto/create-movie.dto';
+import {UpdateMovieDto} from './dto/update-movie.dto';
+
+@Controller('movies')
+export class MoviesController {
+	constructor(private readonly moviesService: MovieService){
+
+	@Get()
+    getAll(): Movie[]{
+    	return this.moviesService.getAll();
+    }        
+    @Get("search")
+    search(@Query('year') searchingYear:string){
+    	return `we are searching for a movie with a title: ${searchingYear}`;
+    }
+        
+    @Get(":id")
+    getOne(@Param('id') movieId:string): Movie{
+    	return this.moviesService.getOne(movieId);
+        }
+    }
+    
+    @Post()
+    create(@Body() movieData: CreateMovieDto) {
+    	return this.moviesService.create(movieData);
+    }
+    
+    @Delete(':id')
+    remove(@Param('id') movieId:string) {
+    	return this.movieService.deleteOne(movieId);
+    }
+	@Patch(':id')
+    patch(@Param('id') movieId:string, @Body() updateData: UpdateMovieDto) {
+    	return this.moviesService.update(movieId, updatedData)
+    }      
+    
+}
+```
+ 
+
+single-responsibility principle
+
+```tsx
+import { Injectable } from '@nestjs/common';
+import { Movie } from './entities/movie.entity';
+
+@Injectable()
+export class MoviesService {
+	private movies: Movie[] = [];
+    
+    getAll(): Movie[] {
+    	return this.movies;
+    }
+    
+    getOne(id:string): Movie{
+    	return this.movies.find(movie=> movie.id=== +id);
+        if(!movie) {
+        	throw new NotFoundException;
+        }
+    }
+    
+    deleteOne(id:string){
+    	this.getOne(id);
+    	this.movies = this.movies.filter(movie=> movie.id !== +id);
+    }
+    
+    create(movieData){
+    	this.movies.push({
+        	id: this.movies.length+1,
+            ...movieData,
+            })
+    }
+    
+    update(id:string, updateData){
+    	const movie = this.getOne(id)
+        this.deleteOne(id);
+        this.movies.push({...movie, ...updatedData});
+    }
+}
+```
+
+

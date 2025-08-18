@@ -21,10 +21,15 @@ export const Curation = ({postList}: {postList: Post[]}) => {
         </section>
         
         {/* 우측: 새 포스트 */}
-        <section className="lg:col-span-1 flex flex-col">
+        <section className="lg:col-span-2 row-span-1 flex flex-col">
           <h2 className='text-lg sm:text-2xl font-bold mb-3'>새로 올라온 글</h2>
-          <div>
-            <PostCard post={firstPost} />
+          <div className='flex gap-4'>
+            {postList.slice(0, 2).map((post) => (
+              <div key={post.slug} className="w-1/2">
+                <PostCard post={post} />
+
+              </div>
+            ))}
           </div>
         </section>
       </div>
