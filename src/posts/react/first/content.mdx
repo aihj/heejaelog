@@ -1,0 +1,119 @@
+---
+title:  "react 18 update: 부드러운 렌더링과 성능 최적화"
+date: 2024-03-04
+desc: 첫번째 설명
+thumbnail: /react18.png
+isHot: true
+---
+
+![](/react18.png)
+
+
+---
+
+## 개요
+
+react 18 업데이트 내용
+
+✅ Concurrent Rendering	startTransition으로 우선순위 제어	✔️ 입력 지연 최소화
+✅ Automatic Batching	비동기 이벤트에서도 상태 업데이트 배칭	✔️ 한 번의 렌더링으로 처리
+✅ useDeferredValue	값 렌더링을 지연하여 성능 최적화	✔️ 리스트 렌더링 최적화
+✅ useId	클라이언트-서버 불일치 없는 ID 생성	✔️ label과 input의 연결
+✅ Suspense 개선	데이터 로딩 시 fallback 적용	✔️ Suspense로 간단한 로딩 처리
+ 
+---
+## 1. concurrent rendering
+
+예제: startTransition을 사용한 성능 최적화
+
+startTransition을 사용하면 긴 렌더링 작업을 낮은 우선순위로 처리하여 입력 지연을 방지할 수 있음. 
+
+```tsx
+import { useState, startTransition } from "react";
+
+export default function App() {
+  const [input, setInput] = useState("");
+  const [list, setList] = useState<string[]>([]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+
+    // 우선순위 낮은 상태 업데이트 (비동기 렌더링)
+    startTransition(() => {
+      setList(new Array(20000).fill(e.target.value));
+    });
+  };
+
+  return (
+    <div>
+      <input type="text" value={input} onChange={handleChange} />
+      <ul>{list.map((item, index) => <li key={index}>{item}</li>)}</ul>
+    </div>
+  );
+}
+```
+
+## 2. Automatic Batching (자동 배칭)
+
+📌 핵심 포인트:
+
+React 17에서는 상태가 각각 업데이트되면서 두 번 렌더링됨.
+React 18에서는 자동 배칭으로 한 번만 렌더링됨.
+
+```tsx
+import { useState } from "react";
+
+export default function App() {
+  const [count, setCount] = useState(0);
+  const [text, setText] = useState("");
+
+  const handleClick = async () => {
+    setCount((c) => c + 1);
+    setText("Updated!");
+
+    // React 18에서는 이 두 개가 하나의 렌더링으로 처리됨
+  };
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <p>Text: {text}</p>
+      <button onClick={handleClick}>Update</button>
+    </div>
+  );
+}
+```
+
+## 3. useDeferredValue를 사용한 값 지연 처리 
+useDeferredValue(query)는 query 값의 렌더링을 지연시켜 입력 지연을 최소화함.
+즉, 사용자의 입력은 즉시 반영되지만, 리스트 렌더링은 성능을 고려하여 조금 늦게 처리됨.
+
+```tsx
+import { useState, useDeferredValue } from "react";
+
+export default function App() {
+  const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
+
+  return (
+    <div>
+      <input
+        type="text"
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Type something..."
+      />
+      <SlowList query={deferredQuery} />
+    </div>
+  );
+}
+
+function SlowList({ query }: { query: string }) {
+  return (
+    <ul>
+      {new Array(20000).fill(query).map((item, index) => (
+        <li key={index}>{item}</li>
+      ))}
+    </ul>
+  );
+}
+```

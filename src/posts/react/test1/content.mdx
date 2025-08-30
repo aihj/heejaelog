@@ -1,0 +1,91 @@
+---
+title:  "zustand vs jotai"
+date: 2024-08-16
+desc: 테스트 설명 
+thumbnail: /posts/test/thumbnail.jpeg
+isHot: true
+---
+
+![테스트 포스트](/posts/test/thumbnail.jpeg)
+
+## Zustand
+
+Zustand는 상태 관리 라이브러리로, React와 함께 사용할 수 있는 경량화된 상태 관리 도구입니다.
+
+간단하고 직관적인 API, 리액트 상태 관리에 집중하며, 여러 컴포넌트에서 상태를 쉽게 공유할 수 있도록 도와줍니다.
+
+또한 중앙 상태 저장소를 사용해 여러 상태를 전역적으로 관리할 수 있습니다.
+
+Jotai
+
+Jotai는 원자(Atom) 기반 상태 관리 라이브러리입니다. 상태를 Atom 단위로 관리하여 더 작은 상태 덩어리로 나누어 관리하는 방식입니다.
+
+컴포넌트가 특정 Atom을 사용하도록 하여, 최소한의 상태 변화만 발생시키는 방식으로 효율적입니다. Jotai는 주로 작고 단위적인 상태 관리에 유리합니다.
+​
+
+## Zustand vs Jotai: 상태 관리 비교
+
+Zustand를 사용한 카드 추가 및 삭제
+
+Zustand는 상태를 전역적으로 관리하는 데 강점을 지니고 있습니다. Zustand의 상태는 컴포넌트가 어디에 위치하든지 관계없이 공유할 수 있습니다. 상태 업데이트가 이루어질 때 빠르고 효율적으로 반영됩니다.
+
+Zustand를 사용한 카드 추가 및 삭제의 예시는 다음과 같습니다:
+
+```tsx
+import create from 'zustand'; // Zustand store 생성
+ 
+const useStore = create((set) =>
+ 
+({ cards: [],
+ 
+// 카드 상태
+addCard: (card) => set((state) => ({ cards: [...state.cards, card] })),
+ 
+removeCard: (index) => set((state) => ({ cards: state.cards.filter((_, i) => i !== index) })), }));
+ 
+/ 카드 컴포넌트
+function Cards() {
+ 
+const { cards, addCard, removeCard } = useStore();
+ 
+return ( <div>
+ 
+<button onClick={() => addCard({ id: Date.now(), content: 'New Card' })}>
+ 
+Add Card</button>
+ 
+{cards.map((card, index) => (
+ 
+<div key={card.id}> <p>{card.content}</p>
+ 
+<button onClick={() => removeCard(index)}>
+ 
+Remove Card</button> </div> ))}
+ 
+</div> ); }
+```
+장점:
+상태를 전역적으로 관리하므로, 카드 추가/삭제와 같은 변화가 모든 컴포넌트에 즉시 반영됩니다.
+간단하고 직관적인 API로, 상태를 변경하는 액션만 정의하면 바로 적용 가능합니다.
+addCard, removeCard와 같은 액션을 통해 상태를 명확하게 관리할 수 있습니다.
+
+## Jotai를 사용한 카드 추가 및 삭제 
+Jotai는 원자 단위로 상태를 관리하는 방식입니다. 각각의 상태를 원자(atom)로 나누어 관리하며, 주로 작은 단위의 상태 관리에 유리합니다. 이 방식은 카드 상태를 개별 원자로 관리하는 것에는 유용하지만, 여러 개의 카드 리스트를 관리할 때는 다소 복잡해질 수 있습니다.
+
+
+장점:
+상태가 원자(atom) 단위로 관리되므로, 작은 상태 단위에서 변화가 빠르게 반영됩니다.
+컴포넌트 간 상태 분리가 잘 되어 있어서, 특정 상태만 업데이트가 필요한 경우 유리합니다.
+단점:
+상태 관리가 분산되어 있기 때문에, 여러 개의 카드 리스트를 관리할 때는 복잡도가 증가합니다.
+카드 목록을 처리할 때, 상태 업데이트가 여러 번 발생하고 이를 관리하는 것이 번거로울 수 있습니다.
+
+## 왜 Zustand가 더 유용한가?
+
+전역 상태 관리의 효율성: Zustand는 상태를 전역적으로 관리하기 때문에 여러 컴포넌트에서 상태를 공유하고, 카드 목록을 관리하는 데 더 유리합니다.
+상태가 한 곳에 모여 있어 관리하기 용이하고, 상태 업데이트가 빠르게 반영됩니다.
+
+상태 변경의 간단한 처리: Zustand는 상태 변경 액션(addCard, removeCard)을 정의하고, 이를 통해 상태를 간단하게 업데이트할 수 있습니다.
+이에 비해 Jotai는 원자 단위로 상태를 관리하기 때문에 여러 카드 리스트를 관리할 때 더 복잡하고 불필요한 업데이트가 발생할 수 있습니다.
+
+코드의 간결성: Zustand는 단순한 API로 상태를 관리할 수 있어 코드가 더 간결하고, 복잡한 상태 관리 로직을 피할 수 있습니다. 반면 Jotai는 원자(atom)를 정의하고 관리해야 하기 때문에, 상태가 많을수록 관리하기 어려워질 수 있습니다.

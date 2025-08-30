@@ -1,0 +1,111 @@
+---
+title:  "DTOs and Validation"
+date: 2024-11-01
+desc: 테스트 설명 
+thumbnail: /nest.png
+isHot: true
+---
+
+![테스트 포스트](/nest.png)
+
+updateData, movieData에게 타입을 부여하기 위해 DTO 생성 
+
+DTO란 데이터를 담아서 전달하기 위한 객체. 
+
+주로 계층 간(Controller ↔ Service, Service ↔ Repository 등)
+
+이터를 주고받을 때 사용하며, 불필요한 로직 없이 순수하게 데이터만 보관하는 역할을 합니다.
+
+NestJS에서 입력값 검증 가능 
+
+CreateMovieDto는 컨트롤러 -> 서비스로 데이터 전달시 사용 
+유효성 검사까지 함께 적용 가능
+
+```tsx
+export class CreateMovieDto {
+  @IsString()
+     readonly title: string;
+     
+     @IsNumber()
+     readonly year: number;
+     
+     @IsString({each:true})
+     readonly genres: string[];
+ }
+ 
+ export class UpdateMovieDto {
+  @IsString()
+     readonly title?: string;
+     
+     @IsNumber()
+     readonly year?: number;
+     
+     @IsString({each:true})
+     readonly genres?: string[];
+ }
+ ```
+
+movies.module.ts
+
+```tsx
+app.module.ts
+import { Module } from '@nestjs/common';
+import { MoviesModule } from './movies/movies.module';
+
+@Module({
+	imports: [MoviesModule],
+    controllers: [],
+    providers: []
+})
+
+export class AppModule{}
+
+
+movies.module.ts
+
+import {MoviesService} form './movies.service';
+@Module({
+	controllers: [MoviesController],
+    providers: [MoviesService],
+})
+
+export class MoviesModule{}
+```
+
+ 
+
+main.ts
+```tsx
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
+
+async function bootstrap() {
+	const app = await NestFactory.create(AppModule);
+    app.useGlobalPipes(
+    	new ValidationPipe({
+        	whitelist: true,
+            forbidNonWhitelisted: true,
+            transform: true
+            }),
+        );
+        await app.listen(3000);
+    }
+    bootstrap();
+```
+
+ 
+
+update-movie.dto.ts
+
+```tsx
+import { PartialType } from '@nestjs/mapped-types';
+import { fromEventPattern } from 'rxjs';
+import { CreateMovieDto } from './create-movie.dto';
+
+export class UpdateMovieDto extends PartialType(CreateMovieDto);
+```
+
+ 
+
+ 
